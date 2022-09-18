@@ -16,7 +16,7 @@ class _EditScreenState extends State<EditScreen> {
       appBar:AppBar(
         title:const Text('Edit Product'),
       ),
-      body: ,
+      body: Container(),
     );
   }
 }
