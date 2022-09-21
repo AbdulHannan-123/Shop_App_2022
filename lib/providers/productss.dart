@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'products.dart';
 
 class Products with ChangeNotifier {
-  final List<Product> _items =[
+  final List<Product> _items = [
     Product(
       id: 'p1',
       title: 'Red Shirt',
@@ -38,16 +38,17 @@ class Products with ChangeNotifier {
   ];
 
   // var _showFavoritesOnly = false;
-  List<Product> get items{
+  List<Product> get items {
     // if(_showFavoritesOnly){
     //   return _items.where((element) => element.isfavorate).toList();
     // }
-    return [..._items];               // adding the ... to make it the copy and send to desired location
-    
+    return [
+      ..._items
+    ]; // adding the ... to make it the copy and send to desired location
   }
 
-  Product findById(String id){
-    return _items.firstWhere((element) => element.id==id);
+  Product findById(String id) {
+    return _items.firstWhere((element) => element.id == id);
   }
 
 // void showFavoritesOnly(){
@@ -60,16 +61,19 @@ class Products with ChangeNotifier {
 //   notifyListeners();
 // }
 
-
-  List<Product> get favList{
+  List<Product> get favList {
     return _items.where((element) => element.isfavorate).toList();
   }
-  
 
-
-  void addProducts(){
-    // _items.add(value);
+  void addProducts(Product product) {
+    final newProduct = Product(
+        id: DateTime.now().toString() ,
+        description: product.description,
+        title: product.title,
+        imageUrl: product.imageUrl,
+        price: product.price);
+        _items.add(newProduct);
+        // _items.insert(0,newProduct);    // to insert at the end
     notifyListeners();
   }
-
 }
