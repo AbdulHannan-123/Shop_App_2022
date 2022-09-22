@@ -16,7 +16,8 @@ class UserProductScreen extends StatelessWidget {
         title:const Text('Your Products'),
         actions: [
           IconButton(onPressed: () {
-           Navigator.of(context).pushNamed(EditScreen.routeName);
+           Navigator.of(context).pushNamed(EditProductScreen.routeName);
+          // Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditProductScreen(),));
           },
            icon:const Icon(Icons.add)),
         ],
@@ -29,7 +30,7 @@ class UserProductScreen extends StatelessWidget {
             Expanded(
               child: ListView.builder(
                 itemCount: productsData.items.length,
-                itemBuilder: (_,i)=>UserProductItem(productsData.items[i].title, productsData.items[i].imageUrl),
+                itemBuilder: (_,i)=>UserProductItem(productsData.items[i].id,productsData.items[i].title, productsData.items[i].imageUrl),
               ),
             ),
             const Divider(),
