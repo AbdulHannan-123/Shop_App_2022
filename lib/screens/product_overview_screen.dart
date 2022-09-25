@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app_2022/providers/cart.dart';
+import 'package:shop_app_2022/providers/productss.dart';
 import 'package:shop_app_2022/screens/cart_screen.dart';
 import 'package:shop_app_2022/widgets/app_drawer.dart';
 import 'package:shop_app_2022/widgets/badge.dart';
@@ -17,6 +18,23 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
   // final List<Product> _loadedProducts;
 
   var _showFavoritesOnly = false;
+  var _isInit = true;
+
+  @override
+  void initState() {
+    // Provider.of<Products>(context).fetchAndSetProducts();           // this wont work here either you set listen to false
+    // Future.delayed(Duration.zero).then((value) => Provider.of<Products>(context).fetchAndSetProducts());
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if(_isInit){
+      Provider.of<Products>(context).fetchAndSetProducts(); 
+    }
+    _isInit=false;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +54,15 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
                 }
               });
             },
-            icon: Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert),
             itemBuilder: (_) => const [
               PopupMenuItem(
-                child: Text('Only Fvorites'),
                 value: FilterOptions.Favorites,
+                child: Text('Only Fvorites'),
               ),
               PopupMenuItem(
-                child: Text('show All'),
                 value: FilterOptions.All,
+                child: Text('show All'),
               ),
             ],
           ),

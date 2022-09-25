@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'products.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Products with ChangeNotifier {
   final List<Product> _items = [
@@ -65,30 +67,61 @@ class Products with ChangeNotifier {
     return _items.where((element) => element.isfavorate).toList();
   }
 
-  void addProducts(Product product) {
-    final newProduct = Product(
-        id: DateTime.now().toString() ,
-        description: product.description,
-        title: product.title,
-        imageUrl: product.imageUrl,
-        price: product.price);
-        _items.add(newProduct);
-        // _items.insert(0,newProduct);    // to insert at the end
-    notifyListeners();
+  Future<void> fetchAndSetProducts() async {
+    final url = Uri.parse(
+        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products.json');
+    try {
+      final responce = await http.get(url);
+      // print(json.decode(responce.body)['name']);
+    } catch (error) {
+      throw (error);
+    }
+    ;
   }
 
-  void updateProduct(String id , Product newProduct){
-    final productIndex= _items.indexWhere((element) => element.id== id);
-    if (productIndex > 0) {
-    _items[productIndex] =newProduct;
-    notifyListeners();
+  Future<void> addProducts(Product product) async {
+    final url = Uri.parse(
+        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products.json');
+    try {
+      final responce = await http.post(url,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'imageUrl': product.imageUrl,
+            'price': product.price,
+            'isFavorite': product.isfavorate
+          }));
+      final newProduct = Product(
+          id: json.decode(responce.body)['name'],
+          description: product.description,
+          title: product.title,
+          imageUrl: product.imageUrl,
+          price: product.price);
+      _items.add(newProduct);
+      // _items.insert(0,newProduct);    // to insert at the end
+      notifyListeners();
+    } catch (error) {
+      // print(error);
+      // throw error;
+
     }
-    else{
+    // .then((responce) {
+
+    // }).catchError((error) {
+    // });
+  }
+
+  void updateProduct(String id, Product newProduct) {
+    final productIndex = _items.indexWhere((element) => element.id == id);
+    if (productIndex > 0) {
+      _items[productIndex] = newProduct;
+      notifyListeners();
+    } else {
       print('...');
     }
   }
 
-  void deleteProducts(String id){
+  void deleteProducts(String id) {
     _items.removeWhere((element) => element.id == id);
     notifyListeners();
   }
