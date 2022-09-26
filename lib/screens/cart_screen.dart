@@ -33,20 +33,7 @@ class CartScreen extends StatelessWidget {
                     label: Text('\$${cart.totalAmount.toStringAsFixed(2)}'),
                     backgroundColor: Theme.of(context).accentColor,
                   ),
-                  FlatButton(
-                    onPressed: () {
-                      Provider.of<Orders>(context, listen: false).addOrders(
-                          cart.items.values.toList(), cart.totalAmount);
-                      cart.clearItems();
-                    },
-                    color: Colors.black,
-                    child: const Text(
-                      "ORDER NOW",
-                      style: TextStyle(
-                        color: Color(0xffe7dcd7),
-                      ),
-                    ),
-                  )
+                  OrderButton(cart: cart)
                 ],
               ),
             ),
@@ -67,6 +54,47 @@ class CartScreen extends StatelessWidget {
             },
           ))
         ],
+      ),
+    );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key? key,
+    required this.cart,
+  }) : super(key: key);
+
+  final Cart cart;
+
+  @override
+  State<OrderButton> createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  var _isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      onPressed: (widget.cart.totalAmount <= 0 || _isLoading)
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+              await Provider.of<Orders>(context, listen: false).addOrders(
+                  widget.cart.items.values.toList(), widget.cart.totalAmount);
+              setState(() {
+                _isLoading = false;
+              });
+              widget.cart.clearItems();
+            },
+      color: Colors.black,
+      child:_isLoading?CircularProgressIndicator() :const Text(
+        "ORDER NOW",
+        style: TextStyle(
+          color: Color(0xffe7dcd7),
+        ),
       ),
     );
   }

@@ -70,7 +70,7 @@ class Products with ChangeNotifier {
 
   Future<void> fetchAndSetProducts() async {
     final url = Uri.parse(
-        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products.json');
+        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products/.json');
     try {
       final responce = await http.get(url);
       // print(json.decode(responce.body)['name']);
@@ -79,7 +79,7 @@ class Products with ChangeNotifier {
       extractedData.forEach((key, value) {
         loadedProducts.add(Product(
           id: key,
-          title: value['title'],
+          title: value["title"],
           description: value['description'],
           price: value['price'],
           isfavorate: value['isFavorite'],
