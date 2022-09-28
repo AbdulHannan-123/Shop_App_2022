@@ -64,9 +64,10 @@ class Products with ChangeNotifier {
 //   notifyListeners();
 // }
 
-   final String? authToken;
+  final String? authToken;
+  final String? userId;
 
-   Products(this.authToken,this._items);
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> get favList {
     return _items.where((element) => element.isfavorate).toList();
@@ -78,21 +79,22 @@ class Products with ChangeNotifier {
     try {
       final responce = await http.get(url);
       // print(json.decode(responce.body)['name']);
-      final extractedData =json.decode(responce.body) as Map<String,dynamic>;
-      final List<Product> loadedProducts =[];
+      final extractedData = json.decode(responce.body) as Map<String, dynamic>;
+      final favoriteResponce = await http.get(Uri.parse(
+          'https://food-app-2022-4df84-default-rtdb.firebaseio.com/userFavorites/$userId.json?auth=$authToken'));
+      final favoriteData = json.decode(favoriteResponce.body);
+      final List<Product> loadedProducts = [];
       extractedData.forEach((key, value) {
         loadedProducts.add(Product(
-          id: key,
-          title: value["title"],
-          description: value['description'],
-          price: value['price'],
-          isfavorate: value['isFavorite'],
-          imageUrl: value['imageUrl']
-
-        ));
-       });
-       _items=loadedProducts;
-       notifyListeners();
+            id: key,
+            title: value["title"],
+            description: value['description'],
+            price: value['price'],
+            isfavorate: favoriteData == null ? false : favoriteData[key] ?? false,
+            imageUrl: value['imageUrl']));
+      });
+      _items = loadedProducts;
+      notifyListeners();
     } catch (error) {
       throw (error);
     }
@@ -101,7 +103,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProducts(Product product) async {
     final url = Uri.parse(
-        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products.json');
+        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products.json?auth=$authToken');
     try {
       final responce = await http.post(url,
           body: json.encode({
@@ -109,7 +111,6 @@ class Products with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
-            'isFavorite': product.isfavorate
           }));
       final newProduct = Product(
           id: json.decode(responce.body)['name'],
@@ -131,17 +132,18 @@ class Products with ChangeNotifier {
     // });
   }
 
-  Future<void> updateProduct(String id, Product newProduct)async {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final productIndex = _items.indexWhere((element) => element.id == id);
     if (productIndex > 0) {
       final url = Uri.parse(
-        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products/$id.json');
-        await http.patch(url, body: json.encode({
-          'title':newProduct.title,
-          'description':newProduct.description,
-          'imageUrl':newProduct.imageUrl,
-          'price': newProduct.price
-        }));
+          'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
+      await http.patch(url,
+          body: json.encode({
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'imageUrl': newProduct.imageUrl,
+            'price': newProduct.price
+          }));
       _items[productIndex] = newProduct;
       notifyListeners();
     } else {
@@ -149,19 +151,18 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> deleteProducts(String id)async{
-      final url = Uri.parse(
-        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products/$id.json');
-      final existingIndex = _items.indexWhere((element) => element.id==id);
-      Product? existingProduct= _items[existingIndex];
-    
-       final responce = await http.delete(url);
-          if(responce.statusCode >=400){
-            throw HttpException(' cound not delete product');
-          }
-          existingProduct=null;
+  Future<void> deleteProducts(String id) async {
+    final url = Uri.parse(
+        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
+    final existingIndex = _items.indexWhere((element) => element.id == id);
+    Product? existingProduct = _items[existingIndex];
 
-        
+    final responce = await http.delete(url);
+    if (responce.statusCode >= 400) {
+      throw HttpException(' cound not delete product');
+    }
+    existingProduct = null;
+
     _items.removeAt(existingIndex);
     notifyListeners();
   }

@@ -21,16 +21,16 @@ class Product with ChangeNotifier {
 
 
 
-  Future<void> isToggle()async{
+  Future<void> isToggle(String token, String userId)async{
     final oldStatus = isfavorate;
     isfavorate= !isfavorate;
     notifyListeners();
       final url = Uri.parse(
-        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products/$id.json');
+        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/userFavorites/$userId/$id.json?auth=$token');
         try{
-          await http.patch(url, body: json.encode({
-            'isFavorite': isfavorate
-          }));
+          await http.put(url, body: json.encode(
+             isfavorate
+          ));
         } catch(error){
           isfavorate=oldStatus;
           notifyListeners();
