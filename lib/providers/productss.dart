@@ -64,13 +64,17 @@ class Products with ChangeNotifier {
 //   notifyListeners();
 // }
 
+   final String? authToken;
+
+   Products(this.authToken,this._items);
+
   List<Product> get favList {
     return _items.where((element) => element.isfavorate).toList();
   }
 
   Future<void> fetchAndSetProducts() async {
     final url = Uri.parse(
-        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products/.json');
+        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products/.json?auth=$authToken');
     try {
       final responce = await http.get(url);
       // print(json.decode(responce.body)['name']);
