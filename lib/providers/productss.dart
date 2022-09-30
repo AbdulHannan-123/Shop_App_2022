@@ -73,9 +73,10 @@ class Products with ChangeNotifier {
     return _items.where((element) => element.isfavorate).toList();
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUser=false]) async {
+    final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' :'';
     final url = Uri.parse(
-        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products/.json?auth=$authToken');
+        'https://food-app-2022-4df84-default-rtdb.firebaseio.com/products/.json?auth=$authToken&$filterString');
     try {
       final responce = await http.get(url);
       // print(json.decode(responce.body)['name']);
@@ -111,6 +112,7 @@ class Products with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
+            'creatorId':userId
           }));
       final newProduct = Product(
           id: json.decode(responce.body)['name'],
