@@ -12,40 +12,51 @@ class ProductDetailScreen extends StatelessWidget {
     final loadedproduct =
         Provider.of<Products>(context, listen: false).findById(productid);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(loadedproduct.title),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              height: 300,
-              width: double.infinity,
-              child: Image.network(
-                loadedproduct.imageUrl,
-                fit: BoxFit.cover,
+      // appBar: AppBar(
+      //   title: Text(loadedproduct.title),
+      // ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 300,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(loadedproduct.title),
+              background: Hero(
+                tag: loadedproduct.id,
+                child: Image.network(
+                  loadedproduct.imageUrl,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-            const SizedBox(
-              height: 10,
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  '\$${loadedproduct.price}',
+                  style: const TextStyle(color: Colors.black54, fontSize: 20),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  width: double.infinity,
+                  child: Text(
+                    loadedproduct.description,
+                    textAlign: TextAlign.center,
+                    softWrap: true,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              '\$${loadedproduct.price}',
-              style: const TextStyle(color: Colors.black54, fontSize: 20),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Container(
-              padding:const EdgeInsets.symmetric(horizontal: 10),
-              width: double.infinity,
-                child: Text(
-              loadedproduct.description,
-              textAlign: TextAlign.center,
-              softWrap: true,
-            ))
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
