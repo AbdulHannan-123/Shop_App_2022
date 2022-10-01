@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
                 primary: Colors.black,
                 secondary: const Color(0xffe7dcd7),
               ),
-              accentColor: Color(0xffe7dcd7),
+              accentColor:const Color(0xffe7dcd7),
               fontFamily: 'Lato'),
           home: authData.isAuth
               ? ProductOverViewScreen()
